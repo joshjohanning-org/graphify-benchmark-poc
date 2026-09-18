@@ -1,0 +1,166 @@
+{
+  "id": "order-completion-state-flow",
+  "title": "Diagnose sales-order completion state flow",
+  "category": "analysis",
+  "benchmark_category": "deep_execution_flow_diagnosis",
+  "prompt": "A sales order is asked to complete but remains In Progress. Trace the runtime path from the public order-model action request through the document state engine and back into order preparation/completion. Explain the valid reasons the result can be In Progress, Invalid, Waiting Payment, or Completed, including validator hooks and the final status/action mutation. Return only valid JSON with keys `ordered_flow`, `state_selection`, `validator_hooks`, `outcomes`, and `evidence`; every evidence item must contain a source path and symbol. Do not modify files.",
+  "answer_key": {
+    "expected_paths": [
+      "base/src/org/compiere/process/DocAction.java",
+      "base/src/org/compiere/process/DocumentEngine.java",
+      "base/src/org/compiere/model/MOrder.java"
+    ],
+    "expected_symbols": [
+      "MOrder.processIt",
+      "DocumentEngine.processIt",
+      "DocumentEngine.prepareThenCompleteIt",
+      "DocumentEngine.prepareIt",
+      "DocumentEngine.completeIt",
+      "MOrder.prepareIt",
+      "MOrder.completeIt"
+    ],
+    "expected_relationships": [
+      "MOrder.processIt constructs DocumentEngine with the order and current status, then passes the requested action and current document action.",
+      "DocumentEngine prefers a valid workflow-requested action, otherwise a valid current document action.",
+      "Complete and Wait Complete route through prepareThenCompleteIt.",
+      "Drafted or Invalid orders are prepared first; any prepare result other than In Progress stops completion.",
+      "MOrder.completeIt returns In Progress when its current document action is Prepare.",
+      "Before/after prepare and before/after complete validator hooks can produce Invalid.",
+      "A prepay order without payment or cash line returns Waiting Payment.",
+      "Normal success sets processed, sets document action to Close, returns Completed, and DocumentEngine writes that returned status to the document."
+    ],
+    "false_positive_patterns": [
+      "completeIt is called directly by the public entry point",
+      "completion always returns Completed",
+      "Waiting Payment is a validation error"
+    ],
+    "grading_threshold": 0.82
+  },
+  "grader": {
+    "objective_pass_score": 0.82,
+    "expected_targets": [
+      {
+        "id": "doc-action-contract",
+        "values": [
+          "base/src/org/compiere/process/DocAction.java"
+        ],
+        "metric_values": [
+          "DocAction"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "engine-path",
+        "values": [
+          "base/src/org/compiere/process/DocumentEngine.java"
+        ],
+        "metric_values": [
+          "DocumentEngine",
+          "prepareThenCompleteIt"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "order-path",
+        "values": [
+          "base/src/org/compiere/model/MOrder.java"
+        ],
+        "metric_values": [
+          "MOrder",
+          "MOrder.processIt",
+          "MOrder.completeIt"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "ordered-flow",
+        "values": [
+          "MOrder(?:\\.processIt)?.*DocumentEngine(?:\\.processIt)?.*prepareThenCompleteIt.*MOrder(?:\\.prepareIt)?.*MOrder(?:\\.completeIt)?"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "validator-hooks",
+        "values": [
+          "TIMING_BEFORE_PREPARE.*TIMING_AFTER_PREPARE.*TIMING_BEFORE_COMPLETE.*TIMING_AFTER_COMPLETE"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "in-progress-reason",
+        "values": [
+          "(?:DocAction|document action).*(?:Prepare|DOCACTION_Prepare).*(?:In Progress|STATUS_InProgress)"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "waiting-payment",
+        "values": [
+          "(?:prepay|PrepayOrder).*(?:no payment|C_Payment_ID.*0).*(?:Waiting Payment|STATUS_WaitingPayment)"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "successful-mutation",
+        "values": [
+          "setProcessed.*(?:true).*(?:DOCACTION_Close|action.*Close).*(?:STATUS_Completed|Completed)"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "engine-status-writeback",
+        "values": [
+          "document\\.completeIt.*document\\.setDocStatus"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "pattern": "(?i)MOrder\\.processIt.*directly calls.*MOrder\\.completeIt",
+        "penalty": 0.2
+      },
+      {
+        "pattern": "(?i)completion always (?:returns|sets).*Completed",
+        "penalty": 0.2
+      },
+      {
+        "pattern": "(?i)Waiting Payment.*(?:validation failure|invalid status)",
+        "penalty": 0.15
+      }
+    ]
+  }
+}

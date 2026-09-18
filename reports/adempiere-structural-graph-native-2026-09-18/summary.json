@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "result_id": "20260918T204927Z",
+  "repository": "adempiere/adempiere",
+  "repository_commit": "59557cc2ee85ac938cd4f31a246d891bc2b15b8f",
+  "harness_commit": "412195089ddcd6eade34a948e5c6ffdc3613e634",
+  "treatment_mode": "forced_graphify_skill_cli",
+  "model_command": "claude-opus-5",
+  "reasoning_effort": "medium",
+  "copilot_cli_version": "1.0.86-2",
+  "frozen_input_hashes": {
+    "config": "42c0018d45b3e8dfc5fe3ec294c12aa440da360b9157424c6ec387c4d9e68eff",
+    "process_task": "9e2b3d910d0c698b9ae95e1000a406815e192abfb0f1b40590c0c2b23ce5eeb0",
+    "shipment_task": "2428c6d7b73be8d15e36c4277f22124122a3e61fee5a9d66da35326f686130a8",
+    "gold_answers": "085c762c2250acbb5920edaf8c83937213584a13b91a5fe8ec2b0e05d3fb1232",
+    "treatment_directive": "25d836c7cc8d10aa77c6e09d2499153e2a95db4d55d24db39acaf0c06018171b",
+    "graphify_skill_tree": "805cfd5487d10d4bac6b7e4fef55ebde17ec8e5b2edad1d589697f75f1857205"
+  },
+  "official_generated_result": {
+    "graphify_wins": 0,
+    "ties": 0,
+    "graphify_losses": 2,
+    "invalid_pairs": 0,
+    "preserved_unchanged_at": "generated-report.md"
+  },
+  "grader_audit": {
+    "finding": "Every applied false-positive penalty was caused by a regex spanning unrelated JSON sections.",
+    "valid_for_effectiveness_conclusions": false,
+    "audited_result": {
+      "graphify_wins": 0,
+      "ties": 2,
+      "graphify_losses": 0
+    },
+    "tasks": {
+      "multi-entry-process-launch-paths": {
+        "control_pre_penalty_target_score": 1.0,
+        "treatment_pre_penalty_target_score": 1.0,
+        "threshold": 0.84
+      },
+      "transitive-shipment-inventory-blast-radius": {
+        "control_pre_penalty_target_score": 0.85,
+        "treatment_pre_penalty_target_score": 0.85,
+        "threshold": 0.82
+      }
+    }
+  },
+  "graph": {
+    "sha256": "1b35f44b0060984e3a69382cec8ebaba78c564439dad9f975012e88c453d27c6",
+    "size_bytes": 219914487,
+    "directed": false,
+    "build_duration_seconds": 1604.46,
+    "build_cost_usd": 0.0,
+    "included_in_run_metrics": false
+  },
+  "design": {
+    "paid_runs": 4,
+    "reruns": 0,
+    "repetitions_per_task_condition": 1,
+    "order": [
+      "multi-entry-process-launch-paths:graphify_off",
+      "transitive-shipment-inventory-blast-radius:graphify_off",
+      "multi-entry-process-launch-paths:graphify_on",
+      "transitive-shipment-inventory-blast-radius:graphify_on"
+    ],
+    "graphify_mcp_disabled": true,
+    "source_modifications": 0
+  },
+  "totals": {
+    "actual_elapsed_seconds": 1429.516661,
+    "summed_wall_seconds": 1341.787049,
+    "ai_credits": 676.166205,
+    "total_model_input_tokens": 6246456,
+    "output_tokens": 119043,
+    "reasoning_tokens_all_models": 13134,
+    "unique_file_entries": 140,
+    "tool_failures": 10
+  },
+  "conditions": {
+    "control": {
+      "wall_seconds": 756.417639,
+      "ai_credits": 384.531855,
+      "total_model_input_tokens": 3626980,
+      "output_tokens": 83026,
+      "reasoning_tokens_all_models": 6808,
+      "unique_file_entries": 112,
+      "tool_failures": 9
+    },
+    "treatment": {
+      "wall_seconds": 585.36941,
+      "session_seconds": 580.367,
+      "ai_credits": 291.63435,
+      "total_model_input_tokens": 2619476,
+      "output_tokens": 36017,
+      "reasoning_tokens": 6326,
+      "unique_file_entries": 28,
+      "tool_failures": 1,
+      "harness_graphify_shell_calls": 9,
+      "actual_graphify_cli_processes": 25,
+      "actual_graph_traversal_processes": 22
+    }
+  },
+  "tasks": {
+    "multi-entry-process-launch-paths": {
+      "definition": "tasks/multi-entry-process-launch-paths.json",
+      "official_control_score": 0.8,
+      "official_treatment_score": 0.45,
+      "audited_control_target_score": 1.0,
+      "audited_treatment_target_score": 1.0,
+      "control_wall_seconds": 192.915976,
+      "treatment_wall_seconds": 272.559305,
+      "control_ai_credits": 96.721075,
+      "treatment_ai_credits": 133.683175,
+      "control_total_model_input_tokens": 510907,
+      "treatment_total_model_input_tokens": 1050967,
+      "control_unique_file_entries": 14,
+      "treatment_unique_file_entries": 15,
+      "classification": "harmful guidance and operationally expensive",
+      "graphify_processes": {
+        "path_traversals": 5,
+        "help": 1
+      }
+    },
+    "transitive-shipment-inventory-blast-radius": {
+      "definition": "tasks/transitive-shipment-inventory-blast-radius.json",
+      "official_control_score": 0.7,
+      "official_treatment_score": 0.5,
+      "audited_control_target_score": 0.85,
+      "audited_treatment_target_score": 0.85,
+      "control_wall_seconds": 563.501663,
+      "treatment_wall_seconds": 312.810105,
+      "control_session_seconds": null,
+      "control_ai_credits": 287.81078,
+      "treatment_ai_credits": 157.951175,
+      "control_total_model_input_tokens": 3116073,
+      "treatment_total_model_input_tokens": 1568509,
+      "control_unique_file_entries": 98,
+      "treatment_unique_file_entries": 13,
+      "classification": "productive but operationally mixed",
+      "graphify_processes": {
+        "traversals": 17,
+        "help": 2
+      },
+      "control_anomaly": {
+        "tool_failures": 9,
+        "terminal_error_after_completed_answer": true,
+        "session_duration_missing": true,
+        "additional_model": "gpt-5.4-mini",
+        "additional_model_requests": 37,
+        "additional_model_ai_credits": 48.72393,
+        "timing_and_cost_comparison_valid": false
+      }
+    }
+  },
+  "raw_logs_committed": false,
+  "generated_answers_committed": false,
+  "graph_data_committed": false,
+  "secrets_committed": false
+}

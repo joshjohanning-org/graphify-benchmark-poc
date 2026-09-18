@@ -1,0 +1,228 @@
+{
+  "id": "transitive-shipment-inventory-blast-radius",
+  "title": "Assess shipment and receipt inventory-mutation blast radius",
+  "category": "analysis",
+  "benchmark_category": "transitive_cross_module_blast_radius",
+  "prompt": "A proposed refactor moves the inventory quantity mutation performed while completing a material shipment or receipt. Determine the exhaustive source-level change impact from the public document action through preparation and completion. Separate direct callees from transitive dependents and validator/observer hooks, identify module boundaries, and distinguish customer-shipment, vendor-receipt, confirmation, matching, downstream-document, and accounting consequences. Return only valid JSON with keys `entry_flow`, `direct_mutations`, `transitive_dependents`, `observers_and_hooks`, `conditional_branches`, `module_boundaries`, `false_positive_exclusions`, and `evidence`; every evidence item must contain a source path and symbol. Do not modify files.",
+  "answer_key": {
+    "expected_paths": [
+      "base/src/org/compiere/process/DocumentEngine.java",
+      "base/src/org/compiere/model/MInOut.java",
+      "base/src/org/compiere/model/MStorage.java",
+      "base/src/org/compiere/model/MTransaction.java",
+      "base/src/org/compiere/model/MOrderLine.java",
+      "base/src/org/compiere/model/MRMALine.java",
+      "base/src/org/compiere/model/MMatchInv.java",
+      "base/src/org/compiere/model/MMatchPO.java",
+      "base/src/org/compiere/model/MInOutConfirm.java",
+      "base/src/org/compiere/model/MInOutLineConfirm.java",
+      "base/src/org/compiere/acct/Doc_InOut.java"
+    ],
+    "expected_symbols": [
+      "DocumentEngine.processIt",
+      "DocumentEngine.prepareThenCompleteIt",
+      "MInOut.prepareIt",
+      "MInOut.completeIt",
+      "MInOut.checkMaterialPolicy",
+      "MStorage.add",
+      "MTransaction.save",
+      "MOrderLine.setQtyReserved",
+      "MOrderLine.setQtyDelivered",
+      "MRMALine.setQtyDelivered",
+      "MInOut.createConfirmation",
+      "MInOut.createCounterDoc",
+      "MInOut.createDropShipment",
+      "Doc_InOut.createFacts"
+    ],
+    "expected_relationships": [
+      "DocumentEngine routes Complete or Wait Complete through prepareThenCompleteIt, which prepares drafted or invalid documents before MInOut.completeIt.",
+      "MInOut.completeIt applies material policy, mutates storage through MStorage.add, and persists an MTransaction for each stock movement.",
+      "Completion updates order-line reserved and delivered quantities and receipt-return RMA delivered quantities.",
+      "Preparation can create MInOutConfirm and MInOutLineConfirm records; open non-customer confirmations block completion.",
+      "Vendor receipts create MMatchInv and MMatchPO records and enqueue them for post-processing, while customer shipments do not.",
+      "Completion can create counter and drop-shipment documents and updates affected order delivery state.",
+      "Before/after prepare and before/after complete validators are observers/gates, not inventory mutation sites.",
+      "Doc_InOut consumes completed shipment/receipt lines for accounting facts but does not mutate inventory."
+    ],
+    "reliable_counts": {
+      "normal_prepare_complete_validator_hooks": 4,
+      "normal_stock_mutation_artifact_types": 2,
+      "receipt_matching_record_types": 2
+    },
+    "false_positive_patterns": [
+      "MInOut.createFrom is the completion inventory mutation site",
+      "Doc_InOut.createFacts mutates on-hand inventory",
+      "checkMaterialPolicy performs the final on-hand quantity mutation",
+      "commented asset deactivation is an active direct completion dependency",
+      "normal shipment and vendor receipt branches create identical matching records"
+    ],
+    "grading_threshold": 0.82
+  },
+  "grader": {
+    "objective_pass_score": 0.82,
+    "expected_targets": [
+      {
+        "id": "document-engine-entry",
+        "values": [
+          "base/src/org/compiere/process/DocumentEngine.java"
+        ],
+        "metric_values": [
+          "DocumentEngine.processIt",
+          "prepareThenCompleteIt"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "shipment-model",
+        "values": [
+          "base/src/org/compiere/model/MInOut.java"
+        ],
+        "metric_values": [
+          "MInOut.prepareIt",
+          "MInOut.completeIt"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "ordered-entry-flow",
+        "values": [
+          "DocumentEngine(?:\\.processIt)?[\\s\\S]*prepareThenCompleteIt[\\s\\S]*MInOut(?:\\.prepareIt)?[\\s\\S]*MInOut(?:\\.completeIt)?"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "inventory-mutation",
+        "values": [
+          "checkMaterialPolicy[\\s\\S]*MStorage\\.add[\\s\\S]*MTransaction"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 3
+      },
+      {
+        "id": "order-line-effects",
+        "values": [
+          "setQtyReserved[\\s\\S]*setQtyDelivered[\\s\\S]*setDateDelivered"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "rma-effect",
+        "values": [
+          "MRMALine[\\s\\S]*setQtyDelivered"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "confirmation-effects",
+        "values": [
+          "MInOutConfirm[\\s\\S]*MInOutLineConfirm"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "receipt-matching",
+        "values": [
+          "MMatchInv[\\s\\S]*MMatchPO[\\s\\S]*addDocsPostProcess"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "downstream-documents",
+        "values": [
+          "createCounterDoc[\\s\\S]*createDropShipment"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "normal-validator-hooks",
+        "values": [
+          "TIMING_BEFORE_PREPARE[\\s\\S]*TIMING_AFTER_PREPARE[\\s\\S]*TIMING_BEFORE_COMPLETE[\\s\\S]*TIMING_AFTER_COMPLETE"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "accounting-boundary",
+        "values": [
+          "base/src/org/compiere/acct/Doc_InOut.java"
+        ],
+        "metric_values": [
+          "Doc_InOut.createFacts"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "branch-distinction",
+        "values": [
+          "(?:customer shipment|CustomerShipment)[\\s\\S]*(?:vendor receipt|VendorReceipts)[\\s\\S]*(?:receipt-only|only.*receipt|matching)"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "pattern": "(?i)MInOut\\.createFrom.*(?:mutates|updates).*(?:inventory|on-hand|storage)",
+        "penalty": 0.2
+      },
+      {
+        "pattern": "(?i)Doc_InOut(?:\\.createFacts)?.*(?:mutates|updates).*(?:inventory|on-hand|MStorage)",
+        "penalty": 0.2
+      },
+      {
+        "pattern": "(?i)checkMaterialPolicy.*(?:final|direct).*(?:on-hand|storage quantity).*(?:mutation|update)",
+        "penalty": 0.15
+      },
+      {
+        "pattern": "(?i)asset deactivation.*(?:active|direct).*(?:callee|dependency|side effect)",
+        "penalty": 0.15
+      },
+      {
+        "pattern": "(?i)(?:customer shipment|shipment).*MMatchInv.*MMatchPO",
+        "penalty": 0.15
+      }
+    ]
+  }
+}

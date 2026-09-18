@@ -1,0 +1,144 @@
+{
+  "id": "routing-service-resolution",
+  "title": "Resolve manufacturing routing service relationships",
+  "category": "analysis",
+  "benchmark_category": "interface_inheritance_caller_relationship",
+  "prompt": "Explain how manufacturing code obtains the runtime service used to estimate routing and work-center duration. Return only valid JSON with keys `contract`, `implementation`, `factory_resolution`, and `production_callers`. The contract and implementation must include source paths and symbols; factory resolution must describe default selection, client-specific fallback, construction mechanism, and caching; production callers must include at least three distinct call sites with path, symbol, and requested operation. Do not modify files.",
+  "answer_key": {
+    "expected_paths": [
+      "base/src/org/eevolution/model/RoutingService.java",
+      "base/src/org/eevolution/model/RoutingServiceFactory.java",
+      "org.eevolution.manufacturing/src/main/java/base/org/eevolution/manufacturing/model/impl/DefaultRoutingServiceImpl.java",
+      "org.eevolution.manufacturing/src/main/java/base/org/eevolution/manufacturing/process/CRP.java",
+      "org.eevolution.manufacturing/src/main/java/base/org/eevolution/manufacturing/model/MPPOrderNode.java",
+      "org.eevolution.manufacturing/src/main/java/base/org/eevolution/manufacturing/services/StandardCostCollector.java"
+    ],
+    "expected_symbols": [
+      "RoutingService",
+      "RoutingServiceFactory",
+      "DefaultRoutingServiceImpl",
+      "RoutingServiceFactory.getRoutingService",
+      "CRP.doIt",
+      "MPPOrderNode.setQtyOrdered",
+      "StandardCostCollector"
+    ],
+    "expected_relationships": [
+      "DefaultRoutingServiceImpl directly implements RoutingService.",
+      "RoutingServiceFactory first checks the requested AD_Client_ID, then client 0, then DEFAULT_ServiceName.",
+      "The factory reflectively loads and instantiates the selected class and caches the instance by AD_Client_ID.",
+      "Production callers obtain the service through RoutingServiceFactory rather than constructing the default implementation."
+    ],
+    "false_positive_patterns": [
+      "Spring dependency injection",
+      "ServiceLoader",
+      "production callers directly instantiate DefaultRoutingServiceImpl"
+    ],
+    "grading_threshold": 0.8
+  },
+  "grader": {
+    "objective_pass_score": 0.8,
+    "expected_targets": [
+      {
+        "id": "contract-path",
+        "values": [
+          "base/src/org/eevolution/model/RoutingService.java"
+        ],
+        "metric_values": [
+          "RoutingService"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "implementation-path",
+        "values": [
+          "org.eevolution.manufacturing/src/main/java/base/org/eevolution/manufacturing/model/impl/DefaultRoutingServiceImpl.java"
+        ],
+        "metric_values": [
+          "DefaultRoutingServiceImpl"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "factory-path",
+        "values": [
+          "base/src/org/eevolution/model/RoutingServiceFactory.java"
+        ],
+        "metric_values": [
+          "RoutingServiceFactory"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "implementation-relation",
+        "values": [
+          "DefaultRoutingServiceImpl.*implements.*RoutingService"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "factory-mechanism",
+        "values": [
+          "(?:loadClass|reflection|reflective).*(?:newInstance|instantiate).*(?:AD_Client_ID|client)"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "process-caller",
+        "values": [
+          "org.eevolution.manufacturing/src/main/java/base/org/eevolution/manufacturing/process/CRP.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "model-caller",
+        "values": [
+          "org.eevolution.manufacturing/src/main/java/base/org/eevolution/manufacturing/model/MPPOrderNode.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "accounting-caller",
+        "values": [
+          "org.eevolution.manufacturing/src/main/java/base/org/eevolution/manufacturing/services/StandardCostCollector.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "pattern": "(?i)Spring(?: Boot)? dependency injection|ServiceLoader",
+        "penalty": 0.2
+      },
+      {
+        "pattern": "(?i)production callers? (?:use|call).*new DefaultRoutingServiceImpl",
+        "penalty": 0.2
+      }
+    ]
+  }
+}

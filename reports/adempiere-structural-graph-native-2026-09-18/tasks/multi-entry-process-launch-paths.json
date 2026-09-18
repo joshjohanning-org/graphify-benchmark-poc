@@ -1,0 +1,211 @@
+{
+  "id": "multi-entry-process-launch-paths",
+  "title": "Resolve multi-channel Java process launch paths",
+  "category": "analysis",
+  "benchmark_category": "multi_entry_shortest_path_convergence",
+  "prompt": "For desktop, server-thread, servlet, and mobile launches of a Java-backed application process, determine the shortest ordered source path from each channel's public launch entry to the ProcessCall callback and then to managed transaction commit, rollback, and close behavior. State one explicit edge-count convention, identify exact convergence and divergence nodes, distinguish shared utility reflection from channel-local reflection, and exclude remote-server, workflow, database-procedure, script, and reporting-fallback paths. Return only valid JSON with keys `edge_convention`, `paths_by_channel`, `path_lengths`, `convergence`, `divergence`, `reflection`, `transaction_outcomes`, `excluded_paths`, and `evidence`; every evidence item must contain a source path and symbol. Do not modify files.",
+  "answer_key": {
+    "expected_paths": [
+      "client/src/org/compiere/apps/ProcessCtl.java",
+      "base/src/org/compiere/process/ServerProcessCtl.java",
+      "serverApps/src/main/servlet/org/compiere/www/WProcessCtl.java",
+      "org.compiere.mobile/WEB-INF/src/org/compiere/mobile/WProcessCtl.java",
+      "base/src/org/adempiere/util/ProcessUtil.java",
+      "base/src/org/compiere/process/ProcessCall.java"
+    ],
+    "expected_symbols": [
+      "ProcessCtl.process",
+      "ProcessCtl.run",
+      "ProcessCtl.startProcess",
+      "ServerProcessCtl.process",
+      "ServerProcessCtl.run",
+      "ServerProcessCtl.startProcess",
+      "org.compiere.www.WProcessCtl.process",
+      "org.compiere.www.WProcessCtl.run",
+      "org.compiere.www.WProcessCtl.startProcess",
+      "org.compiere.mobile.WProcessCtl.process",
+      "org.compiere.mobile.WProcessCtl.run",
+      "org.compiere.mobile.WProcessCtl.startProcess",
+      "ProcessUtil.startJavaProcess",
+      "ProcessCall.startProcess"
+    ],
+    "expected_relationships": [
+      "Desktop and server-thread paths converge at ProcessUtil.startJavaProcess, which reflectively calls getDeclaredConstructor().newInstance before ProcessCall.startProcess.",
+      "Servlet and mobile paths do not use ProcessUtil; each performs Class.forName and newInstance locally before ProcessCall.startProcess.",
+      "Under a convention that counts public entry to run, run to channel startProcess, delegation/reflection construction, and callback invocation separately, every shortest callback path has five edges.",
+      "A compressed convention may count reflective construction and callback dispatch as one equivalent edge, yielding four edges for each channel.",
+      "Managed success commits and closes the transaction; managed failure rolls back and closes it."
+    ],
+    "accepted_path_lengths": {
+      "expanded_reflection_edges": 5,
+      "compressed_reflection_equivalent_edges": 4
+    },
+    "false_positive_patterns": [
+      "DB.isRemoteProcess is part of the local Java callback path",
+      "startWorkflow reaches ProcessCall.startProcess",
+      "startDBProcess reaches ProcessCall.startProcess",
+      "startScriptProcess is the Java callback path",
+      "servlet or mobile converges through ProcessUtil",
+      "every SvrProcess subclass directly implements ProcessCall"
+    ],
+    "grading_threshold": 0.84
+  },
+  "grader": {
+    "objective_pass_score": 0.84,
+    "expected_targets": [
+      {
+        "id": "callback-contract",
+        "values": [
+          "base/src/org/compiere/process/ProcessCall.java"
+        ],
+        "metric_values": [
+          "ProcessCall.startProcess"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "desktop-path",
+        "values": [
+          "client/src/org/compiere/apps/ProcessCtl.java"
+        ],
+        "metric_values": [
+          "ProcessCtl.process",
+          "ProcessCtl.run",
+          "ProcessCtl.startProcess"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "server-path",
+        "values": [
+          "base/src/org/compiere/process/ServerProcessCtl.java"
+        ],
+        "metric_values": [
+          "ServerProcessCtl.process",
+          "ServerProcessCtl.run",
+          "ServerProcessCtl.startProcess"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "servlet-path",
+        "values": [
+          "serverApps/src/main/servlet/org/compiere/www/WProcessCtl.java"
+        ],
+        "metric_values": [
+          "org.compiere.www.WProcessCtl"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "mobile-path",
+        "values": [
+          "org.compiere.mobile/WEB-INF/src/org/compiere/mobile/WProcessCtl.java"
+        ],
+        "metric_values": [
+          "org.compiere.mobile.WProcessCtl"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "desktop-server-convergence",
+        "values": [
+          "(?:desktop|ProcessCtl)[\\s\\S]*(?:server-thread|ServerProcessCtl)[\\s\\S]*ProcessUtil\\.startJavaProcess"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "shared-reflection",
+        "values": [
+          "ProcessUtil[\\s\\S]*getDeclaredConstructor[\\s\\S]*newInstance[\\s\\S]*ProcessCall(?:\\.startProcess)?"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "servlet-mobile-divergence",
+        "values": [
+          "(?:servlet|org\\.compiere\\.www)[\\s\\S]*Class\\.forName[\\s\\S]*newInstance[\\s\\S]*(?:mobile|org\\.compiere\\.mobile)[\\s\\S]*Class\\.forName[\\s\\S]*newInstance"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "managed-transaction",
+        "values": [
+          "(?:success|true)[\\s\\S]*commit[\\s\\S]*close[\\s\\S]*(?:failure|exception|false)[\\s\\S]*rollback[\\s\\S]*close"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "path-lengths",
+        "values": [
+          "(?:five|5)[\\s\\S]*(?:desktop|ProcessCtl)[\\s\\S]*(?:server|ServerProcessCtl)[\\s\\S]*(?:servlet|www\\.WProcessCtl)[\\s\\S]*(?:mobile|mobile\\.WProcessCtl)"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "excluded-non-java-paths",
+        "values": [
+          "(?:remote|DB\\.isRemoteProcess)[\\s\\S]*(?:workflow|startWorkflow)[\\s\\S]*(?:database|startDBProcess)[\\s\\S]*(?:script|startScriptProcess)"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "pattern": "(?i)(?:servlet|mobile)[\\s\\S]*ProcessUtil\\.startJavaProcess",
+        "penalty": 0.2
+      },
+      {
+        "pattern": "(?i)(?:startWorkflow|startDBProcess|startScriptProcess)[\\s\\S]*(?:calls|reaches|invokes)[\\s\\S]*ProcessCall\\.startProcess",
+        "penalty": 0.2
+      },
+      {
+        "pattern": "(?i)DB\\.isRemoteProcess[\\s\\S]*(?:local|same-process)[\\s\\S]*ProcessCall",
+        "penalty": 0.15
+      },
+      {
+        "pattern": "(?i)(?:all|every).*SvrProcess subclass.*direct(?:ly)? implements",
+        "penalty": 0.15
+      }
+    ]
+  }
+}

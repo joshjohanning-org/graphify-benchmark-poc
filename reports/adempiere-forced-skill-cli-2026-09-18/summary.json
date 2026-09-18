@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "result_id": "20260918T195005Z",
+  "repository": "adempiere/adempiere",
+  "repository_commit": "59557cc2ee85ac938cd4f31a246d891bc2b15b8f",
+  "harness_commit": "3b046d6d3b5d6deb155033637bcb511296418463",
+  "treatment_mode": "forced_graphify_skill_cli",
+  "model": "claude-opus-5",
+  "reasoning_effort": "medium",
+  "copilot_cli_version": "1.0.86-2",
+  "design": {
+    "repetitions_per_task_condition": 1,
+    "order": "all controls first, then all treatments, preserving task order",
+    "control": "unchanged prompt; no project Graphify skill, graph, CLI use, or Graphify MCP",
+    "treatment": "forced directive; project Graphify skill; immutable read-only graph; successful Graphify CLI required; Graphify MCP disabled",
+    "graphify_mcp_server_disabled": "graphify_adempiere"
+  },
+  "graph": {
+    "sha256": "1b35f44b0060984e3a69382cec8ebaba78c564439dad9f975012e88c453d27c6",
+    "size_bytes": 219914487,
+    "build_duration_seconds": 1604.46,
+    "build_cost_usd": 0.0,
+    "included_in_run_metrics": false
+  },
+  "outcome": {
+    "graphify_wins": 0,
+    "ties": 4,
+    "graphify_losses": 0,
+    "invalid_pairs": 0,
+    "valid_runs": 8,
+    "objective_passes": 8
+  },
+  "conditions": {
+    "control": {
+      "mean_correctness": 0.95,
+      "wall_seconds": 492.524367,
+      "session_seconds": 482.885,
+      "ai_credits": 204.2176,
+      "total_model_input_tokens": 1222769,
+      "output_tokens": 32901,
+      "reasoning_tokens": 3779,
+      "unique_file_entries": 47,
+      "graphify_cli_calls": 0
+    },
+    "treatment": {
+      "mean_correctness": 0.95,
+      "wall_seconds": 462.663433,
+      "session_seconds": 452.778,
+      "ai_credits": 271.9694,
+      "total_model_input_tokens": 2029164,
+      "output_tokens": 30844,
+      "reasoning_tokens": 3681,
+      "unique_file_entries": 38,
+      "graphify_cli_calls": 5,
+      "graphify_cli_successes": 5
+    }
+  },
+  "tasks": [
+    {
+      "id": "exact-db-connection-literal",
+      "definition": "tasks/exact-db-connection-literal.json",
+      "control_score": 1.0,
+      "treatment_score": 1.0,
+      "control_wall_seconds": 41.855093,
+      "treatment_wall_seconds": 42.932982,
+      "control_ai_credits": 26.492975,
+      "treatment_ai_credits": 36.27505,
+      "control_total_model_input_tokens": 98781,
+      "treatment_total_model_input_tokens": 270370,
+      "control_unique_file_entries": 6,
+      "treatment_unique_file_entries": 4,
+      "treatment_graphify_cli_calls": 1
+    },
+    {
+      "id": "java-process-contract-impact",
+      "definition": "tasks/java-process-contract-impact.json",
+      "control_score": 0.8,
+      "treatment_score": 0.8,
+      "control_wall_seconds": 247.003554,
+      "treatment_wall_seconds": 204.649441,
+      "control_ai_credits": 94.635875,
+      "treatment_ai_credits": 110.29275,
+      "control_total_model_input_tokens": 681194,
+      "treatment_total_model_input_tokens": 924566,
+      "control_unique_file_entries": 26,
+      "treatment_unique_file_entries": 21,
+      "treatment_graphify_cli_calls": 1
+    },
+    {
+      "id": "order-completion-state-flow",
+      "definition": "tasks/order-completion-state-flow.json",
+      "control_score": 1.0,
+      "treatment_score": 1.0,
+      "control_wall_seconds": 105.773007,
+      "treatment_wall_seconds": 140.151129,
+      "control_ai_credits": 48.01285,
+      "treatment_ai_credits": 73.3256,
+      "control_total_model_input_tokens": 229778,
+      "treatment_total_model_input_tokens": 454078,
+      "control_unique_file_entries": 4,
+      "treatment_unique_file_entries": 3,
+      "treatment_graphify_cli_calls": 2
+    },
+    {
+      "id": "routing-service-resolution",
+      "definition": "tasks/routing-service-resolution.json",
+      "control_score": 1.0,
+      "treatment_score": 1.0,
+      "control_wall_seconds": 97.892713,
+      "treatment_wall_seconds": 74.929881,
+      "control_ai_credits": 35.0759,
+      "treatment_ai_credits": 52.076,
+      "control_total_model_input_tokens": 213016,
+      "treatment_total_model_input_tokens": 380150,
+      "control_unique_file_entries": 11,
+      "treatment_unique_file_entries": 10,
+      "treatment_graphify_cli_calls": 1
+    }
+  ],
+  "raw_artifacts_committed": false,
+  "sensitive_auth_committed": false
+}

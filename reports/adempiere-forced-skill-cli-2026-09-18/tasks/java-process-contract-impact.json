@@ -1,0 +1,175 @@
+{
+  "id": "java-process-contract-impact",
+  "title": "Assess Java process callback contract impact",
+  "category": "analysis",
+  "benchmark_category": "cross_module_impact_analysis",
+  "prompt": "A proposed API change adds a checked exception to the callback contract used to launch Java-backed application processes. Assess the direct source impact across core, desktop, server, mobile, reporting, and utility code. Return only valid JSON with keys `contract`, `direct_implementers`, `launchers_by_module`, `reflection_path`, and `transaction_behavior`. Distinguish direct interface implementers from subclasses that inherit an implementation, and do not modify files.",
+  "answer_key": {
+    "expected_paths": [
+      "base/src/org/compiere/process/ProcessCall.java",
+      "base/src/org/compiere/process/SvrProcess.java",
+      "base/src/org/compiere/model/MPayment.java",
+      "JasperReports/src/org/compiere/jr/report/ReportStarter.java",
+      "base/src/org/adempiere/util/ProcessUtil.java",
+      "client/src/org/compiere/apps/ProcessCtl.java",
+      "base/src/org/compiere/process/ServerProcessCtl.java",
+      "serverApps/src/main/servlet/org/compiere/www/WProcessCtl.java",
+      "org.compiere.mobile/WEB-INF/src/org/compiere/mobile/WProcessCtl.java",
+      "base/src/org/compiere/model/MProcess.java"
+    ],
+    "expected_symbols": [
+      "ProcessCall.startProcess",
+      "SvrProcess.startProcess",
+      "MPayment.startProcess",
+      "ReportStarter.startProcess",
+      "ProcessUtil.startJavaProcess",
+      "ProcessCtl.startProcess",
+      "ServerProcessCtl.startProcess",
+      "WProcessCtl.startProcess",
+      "MProcess.startClass"
+    ],
+    "expected_relationships": [
+      "SvrProcess, MPayment, and ReportStarter directly implement ProcessCall.",
+      "Desktop and server controllers delegate local Java execution to ProcessUtil.startJavaProcess.",
+      "The servlet and mobile controllers reflectively instantiate and cast ProcessCall directly.",
+      "MProcess.startClass delegates to ProcessUtil.startJavaProcess.",
+      "ProcessUtil reflectively constructs the class, invokes startProcess, commits on managed success, and rolls back on managed failure."
+    ],
+    "false_positive_patterns": [
+      "Every subclass of SvrProcess is a direct ProcessCall implementer",
+      "Database stored procedures implement the callback",
+      "The callback is limited to the desktop client"
+    ],
+    "grading_threshold": 0.8
+  },
+  "grader": {
+    "objective_pass_score": 0.8,
+    "expected_targets": [
+      {
+        "id": "contract",
+        "values": [
+          "base/src/org/compiere/process/ProcessCall.java"
+        ],
+        "metric_values": [
+          "ProcessCall",
+          "startProcess"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "svrprocess-implementer",
+        "values": [
+          "base/src/org/compiere/process/SvrProcess.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "payment-implementer",
+        "values": [
+          "base/src/org/compiere/model/MPayment.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "report-implementer",
+        "values": [
+          "JasperReports/src/org/compiere/jr/report/ReportStarter.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "utility-launcher",
+        "values": [
+          "base/src/org/adempiere/util/ProcessUtil.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      },
+      {
+        "id": "desktop-launcher",
+        "values": [
+          "client/src/org/compiere/apps/ProcessCtl.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "server-launcher",
+        "values": [
+          "base/src/org/compiere/process/ServerProcessCtl.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "servlet-launcher",
+        "values": [
+          "serverApps/src/main/servlet/org/compiere/www/WProcessCtl.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "mobile-launcher",
+        "values": [
+          "org.compiere.mobile/WEB-INF/src/org/compiere/mobile/WProcessCtl.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "model-launcher",
+        "values": [
+          "base/src/org/compiere/model/MProcess.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "reflection-and-transaction",
+        "values": [
+          "(?:getDeclaredConstructor|newInstance|reflect).*(?:startProcess).*(?:commit).*(?:rollback)"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "pattern": "(?i)(?:all|every).*SvrProcess subclass.*direct(?:ly)? implements",
+        "penalty": 0.2
+      },
+      {
+        "pattern": "(?i)only.*desktop",
+        "penalty": 0.2
+      }
+    ]
+  }
+}

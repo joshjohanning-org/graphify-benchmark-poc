@@ -1,0 +1,132 @@
+{
+  "id": "exact-db-connection-literal",
+  "title": "Inventory exact database-connection message uses",
+  "category": "analysis",
+  "benchmark_category": "lexical_negative_control",
+  "prompt": "Determine every Java source location that uses the exact text `No Database Connection` as a string literal. Exclude comments, partial matches, and longer variants. Return only valid JSON with keys `occurrences` (an array of objects with `path`, `class`, `method`, and `behavior`), `total_occurrences`, and `excluded_near_matches`. Do not modify files.",
+  "answer_key": {
+    "expected_occurrence_count": 6,
+    "expected_paths": [
+      "serverApps/src/main/servlet/org/compiere/www/WLogin.java",
+      "org.compiere.mobile/WEB-INF/src/org/compiere/mobile/WLogin.java",
+      "base/src/org/compiere/util/DB.java"
+    ],
+    "expected_symbols": [
+      "org.compiere.www.WLogin.doPost",
+      "org.compiere.mobile.WLogin.doPost",
+      "org.compiere.util.DB.getDatabase",
+      "org.compiere.util.DB.isOracle",
+      "org.compiere.util.DB.isMySQL",
+      "org.compiere.util.DB.isMariaDB"
+    ],
+    "expected_relationships": [
+      "The two login servlets use the literal as a fallback user-visible message when the WLoginNoDB translation is unavailable.",
+      "The four DB methods log the literal at severe level when the shared connection descriptor is null."
+    ],
+    "false_positive_patterns": [
+      "webCM/src/main/servlet/org/compiere/cm/HttpServletCM.java",
+      "isPostgreSQL",
+      "No Database Connection!"
+    ],
+    "grading_threshold": 0.85
+  },
+  "grader": {
+    "objective_pass_score": 0.85,
+    "expected_targets": [
+      {
+        "id": "server-login",
+        "values": [
+          "serverApps/src/main/servlet/org/compiere/www/WLogin.java"
+        ],
+        "metric_values": [
+          "No Database Connection"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "mobile-login",
+        "values": [
+          "org.compiere.mobile/WEB-INF/src/org/compiere/mobile/WLogin.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "db-utility",
+        "values": [
+          "base/src/org/compiere/util/DB.java"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "get-database",
+        "values": [
+          "getDatabase"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "oracle-check",
+        "values": [
+          "isOracle"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "mysql-check",
+        "values": [
+          "isMySQL"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "mariadb-check",
+        "values": [
+          "isMariaDB"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "exact-count",
+        "values": [
+          "\"total_occurrences\"\\s*:\\s*6"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "pattern": "\"class\"\\s*:\\s*\"org\\.compiere\\.cm\\.HttpServletCM\"",
+        "penalty": 0.15
+      },
+      {
+        "pattern": "\"method\"\\s*:\\s*\"isPostgreSQL\"",
+        "penalty": 0.15
+      }
+    ]
+  }
+}
