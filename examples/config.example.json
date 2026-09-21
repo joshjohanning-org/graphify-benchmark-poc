@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "treatment_mode": "mcp_only",
+  "graphify_server": "REPLACE_WITH_EXACT_COPILOT_MCP_SERVER_NAME",
+  "graphify_skill_source": null,
+  "graphify_graph_source": null,
+  "graphify_graph_build_duration_seconds": null,
+  "graphify_graph_build_cost_usd": null,
+  "forced_graphify_directive": "You must use the Graphify skill and run Graphify CLI queries before using grep, find, glob, or reading source files. Use Graphify to identify the relevant symbols, relationships, and files, then verify them in source.",
+  "model": "REPLACE_WITH_PINNED_MODEL",
+  "reasoning_effort": "medium",
+  "repetitions": 3,
+  "seed": 20260916,
+  "repo_root": ".",
+  "repo_ref": "REPLACE_WITH_COMMIT_SHA",
+  "copilot_version": "REPLACE_WITH_RECORDED_COPILOT_VERSION",
+  "tasks_dir": "benchmarks/graphify/tasks",
+  "results_dir": "benchmark-results/graphify",
+  "worktree_exclude_paths": [
+    "graphify-out",
+    ".copilot/skills/graphify"
+  ],
+  "copilot_command": "copilot",
+  "copilot_extra_args": [],
+  "run_timeout_seconds": 1800,
+  "validation_timeout_seconds": 300,
+  "score_tie_tolerance": 0.01,
+  "metrics": {
+    "graphify_tool_name_patterns": [
+      "(?i)graphify"
+    ],
+    "known_graphify_tool_names": [],
+    "search_tool_name_patterns": [
+      "(?i)(search|grep|ripgrep|rg|glob|find)"
+    ],
+    "read_tool_name_patterns": [
+      "(?i)(read|view|get_file|file_content|cat)"
+    ],
+    "shell_tool_name_patterns": [
+      "(?i)(bash|shell|terminal|powershell|pwsh|cmd)"
+    ],
+    "shell_read_command_patterns": [
+      "(?i)(?:^|[;&|]\\s*)(?:cat|head|tail|less|more|sed|awk)\\b"
+    ],
+    "targeted_argument_patterns": [
+      "(?:src|test|tests|docs|scripts)/[A-Za-z0-9_./-]+",
+      "\\b[A-Z][A-Za-z0-9_]{3,}\\b",
+      "\\b[A-Za-z_][A-Za-z0-9_]*\\.(?:java|py|js|ts|tsx|go|rs|cs|cpp|c|h|md|json|xml|yml|yaml)\\b"
+    ],
+    "broad_argument_patterns": [
+      "\\*\\*",
+      "(?i)\\b(entire|everything|all files|whole repository|codebase)\\b",
+      "(?i)\"(?:path|paths|directory)\"\\s*:\\s*\"[./]*\""
+    ],
+    "graphify_follow_up_window": 4
+  },
+  "otel": {
+    "enabled": false,
+    "capture_message_content": false
+  }
+}

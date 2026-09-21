@@ -1,0 +1,42 @@
+{
+  "id": "replace-with-task-id",
+  "title": "Replace with a repository-specific impact question",
+  "category": "analysis",
+  "prompt": "Describe a realistic cross-module engineering question without naming Graphify, expected files, or answer-key symbols. Require source paths and symbols in the response. Do not modify files.",
+  "grader": {
+    "objective_pass_score": 0.8,
+    "expected_targets": [
+      {
+        "id": "expected-entry-point",
+        "values": [
+          "REPLACE_WITH_SOURCE_PATH",
+          "REPLACE_WITH_SYMBOL"
+        ],
+        "metric_values": [
+          "REPLACE_WITH_SYMBOL"
+        ],
+        "sources": [
+          "answer"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "expected-relationship",
+        "values": [
+          "REPLACE_WITH_ORDERED_AND_FIELD_SCOPED_REGEX"
+        ],
+        "match": "regex",
+        "sources": [
+          "answer"
+        ],
+        "weight": 2
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "pattern": "REPLACE_WITH_NARROW_FIELD_SCOPED_FALSE_POSITIVE_REGEX",
+        "penalty": 0.2
+      }
+    ]
+  }
+}

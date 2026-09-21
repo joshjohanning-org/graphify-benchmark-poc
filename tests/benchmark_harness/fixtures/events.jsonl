@@ -1,0 +1,24 @@
+{"type":"tool.execution_start","timestamp":"2026-09-16T14:00:00Z","data":{"toolCallId":"broad-1","toolName":"rg","arguments":{"pattern":"**/*.py","paths":"."}}}
+{"type":"tool.execution_complete","timestamp":"2026-09-16T14:00:01Z","data":{"toolCallId":"broad-1","success":true,"result":{"content":"2 matches","detailedContent":"src/order.py\nsrc/customer.py"},"toolTelemetry":{"durationMs":10}}}
+{"type":"tool.execution_start","timestamp":"2026-09-16T14:00:02Z","data":{"toolCallId":"graph-1","toolName":"graphify.query","arguments":{"question":"Map the service flow"}}}
+{"type":"tool.execution_complete","timestamp":"2026-09-16T14:00:03Z","data":{"toolCallId":"graph-1","success":true,"result":{"content":"Candidate service cluster"}}}
+{"type":"tool.execution_start","timestamp":"2026-09-16T14:00:03Z","data":{"toolCallId":"graph-search-1","toolName":"graphify_search","arguments":{"query":"all files","path":"."}}}
+{"type":"tool.execution_complete","timestamp":"2026-09-16T14:00:03Z","data":{"toolCallId":"graph-search-1","success":true,"result":{"content":"Graph search results"}}}
+{"type":"tool.execution_start","timestamp":"2026-09-16T14:00:04Z","data":{"toolCallId":"target-1","toolName":"search_code","arguments":{"query":"OrderService","path":"src"}}}
+{"type":"tool.execution_complete","timestamp":"2026-09-16T14:00:05Z","data":{"toolCallId":"target-1","success":true,"result":{"content":"src/order.py: class OrderService"}}}
+{"type":"tool.execution_start","timestamp":"2026-09-16T14:00:06Z","data":{"toolCallId":"read-1","toolName":"view","arguments":{"path":"src/order.py"}}}
+{"type":"tool.execution_complete","timestamp":"2026-09-16T14:00:07Z","data":{"toolCallId":"read-1","success":true,"result":{"content":"class OrderService: pass"}}}
+{"type":"tool.execution_start","timestamp":"2026-09-16T14:00:08Z","data":{"toolCallId":"read-2","toolName":"read_file","arguments":{"path":"tests/test_order.py"}}}
+{"type":"tool.execution_complete","timestamp":"2026-09-16T14:00:09Z","data":{"toolCallId":"read-2","success":false,"result":"permission denied"}}
+{"type":"tool.execution_start","timestamp":"2026-09-16T14:00:09Z","data":{"toolCallId":"shell-read-1","toolName":"bash","arguments":"sed -n '1,20p' pom.xml"}}
+{"type":"tool.execution_complete","timestamp":"2026-09-16T14:00:09Z","data":{"toolCallId":"shell-read-1","success":true,"result":{"content":"<project />"}}}
+{"type":"tool.execution_complete","timestamp":"2026-09-16T14:00:10Z","data":{"toolCallId":"orphan-1","toolName":"shell","success":true,"result":{"content":"done"}}}
+{"type":"assistant.message","data":{"content":"Draft answer"}}
+{"type":"model.call_finished","data":{"outcome":"timeout"}}
+{"type":"session.mcp_server_status_changed","data":{"serverName":"graphify-main","status":"connected"}}
+{"type":"session.mcp_server_status_changed","data":{"serverName":"graphify-main","status":"unavailable"}}
+{"type":"session.mcp_server_status_changed","data":{"serverName":"auth-server","status":"needs-auth"}}
+{"type":"session.mcp_server_status_changed","data":{"serverName":"missing-server","status":"not_configured"}}
+{"type":"result","exitCode":7,"content":"Final: OrderService calls OrderRepository.","usage":{"sessionDurationMs":4321}}
+{not valid json
+["not","an","event"]

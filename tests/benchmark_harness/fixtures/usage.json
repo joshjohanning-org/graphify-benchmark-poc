@@ -1,0 +1,24 @@
+{
+  "totalNanoAiu": 123456,
+  "totalApiDurationMs": 987.5,
+  "tokenDetails": {
+    "input": {
+      "tokenCount": 101
+    },
+    "cache_read": {
+      "tokenCount": 40
+    },
+    "output": {
+      "tokenCount": 22
+    }
+  },
+  "modelMetrics": {
+    "gpt-test": {
+      "requests": 2
+    }
+  },
+  "codeChanges": {
+    "added": 3,
+    "deleted": 1
+  }
+}

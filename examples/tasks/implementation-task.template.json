@@ -1,0 +1,46 @@
+{
+  "id": "replace-with-implementation-task-id",
+  "title": "Replace with a bounded repository-specific code change",
+  "category": "implementation",
+  "prompt": "Describe one realistic code change and its required behavior. Do not mention Graphify, expected files, or the hidden grading contract. Require the repository's focused validation.",
+  "validation": {
+    "command": "REPLACE_WITH_BUILD_TEST_AND_TARGETED_ASSERTION_COMMAND"
+  },
+  "grader": {
+    "objective_pass_score": 0.9,
+    "validation_weight": 0.6,
+    "validation_required": true,
+    "expected_targets": [
+      {
+        "id": "expected-source-change",
+        "values": [
+          "REPLACE_WITH_SOURCE_PATH"
+        ],
+        "metric_values": [
+          "REPLACE_WITH_SYMBOL"
+        ],
+        "sources": [
+          "status",
+          "diff"
+        ],
+        "weight": 1
+      },
+      {
+        "id": "expected-contract-change",
+        "values": [
+          "REPLACE_WITH_EXPECTED_DIFF_TEXT_OR_REGEX"
+        ],
+        "sources": [
+          "diff"
+        ],
+        "weight": 1
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "pattern": "REPLACE_WITH_UNSUPPORTED_OR_INCORRECT_IMPLEMENTATION_REGEX",
+        "penalty": 0.2
+      }
+    ]
+  }
+}
