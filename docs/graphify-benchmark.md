@@ -36,7 +36,7 @@ commit SHA, and writes the ignored `.graphify-benchmark.json` file:
 python3 scripts/graphify_benchmark.py configure \
   --graphify-server YOUR_EXACT_SERVER_NAME \
   --graphify-skill-source /ABSOLUTE/PATH/TO/graphify-skill \
-  --model YOUR_PINNED_MODEL \
+  --model claude-opus-5 \
   --reasoning-effort medium
 ```
 
@@ -77,7 +77,7 @@ python3 scripts/graphify_benchmark.py configure \
   --graphify-graph-source /ABSOLUTE/PATH/TO/graphify-out/graph.json \
   --graphify-graph-build-duration-seconds 123.45 \
   --graphify-graph-build-cost-usd 1.23 \
-  --model YOUR_PINNED_MODEL \
+  --model claude-opus-5 \
   --reasoning-effort medium
 ```
 

@@ -22,14 +22,14 @@ their own checkout and write tasks grounded in their own source code.
 The harness repository and target repository remain separate:
 
 ```text
-/work/graphify-benchmark-toolkit/   this repository
+/work/graphify-benchmark-poc/       this repository
 /work/their-application/            the code being benchmarked
 ```
 
 Run the harness while the current directory is the target repository:
 
 ```bash
-export HARNESS_ROOT=/work/graphify-benchmark-toolkit
+export HARNESS_ROOT=/work/graphify-benchmark-poc
 cd /work/their-application
 
 python3 "$HARNESS_ROOT/scripts/graphify_benchmark.py" configure \
@@ -38,13 +38,16 @@ python3 "$HARNESS_ROOT/scripts/graphify_benchmark.py" configure \
   --graphify-graph-source "$PWD/graphify-out/graph.json" \
   --tasks-dir "$PWD/benchmarks/graphify/tasks" \
   --results-dir "$PWD/benchmark-results/graphify" \
-  --model YOUR_PINNED_MODEL \
+  --model claude-opus-5 \
   --reasoning-effort medium
 
 python3 "$HARNESS_ROOT/scripts/graphify_benchmark.py" doctor
 python3 "$HARNESS_ROOT/scripts/graphify_benchmark.py" preflight
 python3 "$HARNESS_ROOT/scripts/graphify_benchmark.py" run --pilot
 ```
+
+`claude-opus-5` with medium reasoning is the exact model configuration used
+for the included Adempiere benchmarks.
 
 `configure` pins the target repository's current commit. Every measured run
 uses a disposable worktree at that commit. The control receives no Graphify

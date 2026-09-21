@@ -6,11 +6,10 @@ repository. The benchmark toolkit does not contain or copy the App source.
 ## 1. Prepare two separate checkouts
 
 ```bash
-git clone https://github.com/joshjohanning-org/adempiere-graphify-benchmark.git \
-  graphify-benchmark-toolkit
+git clone https://github.com/joshjohanning-org/graphify-benchmark-poc.git
 git clone YOUR_APP_REPOSITORY_URL their-application
 
-export HARNESS_ROOT="$PWD/graphify-benchmark-toolkit"
+export HARNESS_ROOT="$PWD/graphify-benchmark-poc"
 cd their-application
 ```
 
@@ -55,9 +54,13 @@ python3 "$HARNESS_ROOT/scripts/graphify_benchmark.py" configure \
   --graphify-graph-source "$PWD/graphify-out/graph.json" \
   --tasks-dir "$PWD/benchmarks/graphify/tasks" \
   --results-dir "$PWD/benchmark-results/graphify" \
-  --model YOUR_PINNED_MODEL \
+  --model claude-opus-5 \
   --reasoning-effort medium
 ```
+
+`claude-opus-5` with medium reasoning is the exact configuration used for the
+included Adempiere runs. Keep the same model and reasoning effort in every
+control and treatment condition.
 
 This writes `.graphify-benchmark.json` in the App checkout and pins the current
 App commit. Do not change the commit, tasks, graph, model, or configuration
